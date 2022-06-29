@@ -1,4 +1,4 @@
-﻿// While all other traditional arithmetical operations in C# are straightfoward,
+// While all other traditional arithmetical operations in C# are straightfoward,
 // Division has its specifics
 int a = 5;
 int b = 4;
