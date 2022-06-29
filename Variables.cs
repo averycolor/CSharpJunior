@@ -1,4 +1,4 @@
-﻿// Data types: integers
+// Data types: integers
 byte b;    // [0..255]
 sbyte sb;  // [-128..127]
 short sh;  // [-32768..32767]
