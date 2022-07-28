@@ -4,26 +4,27 @@ namespace Homework
     {
         static void Main(string[] args)
         {
-            
+            Knight knight = new Knight(10, 5, 100, 21);
+            Barbarian barbarian = new Barbarian(-5, 10, 16, 70, 40);
         }
     }
 
     class Warrior
     {
-        public int Armor;
-        public int Health;
-        public int Damage;
+        protected int _armor;
+        protected int _health;
+        protected int _damage;
 
         public Warrior(int armor, int health, int damage)
         {
-            Armor = armor;
-            Health = health;
-            Damage = damage;
+            _armor = armor;
+            _health = health;
+            _damage = damage;
         }
 
         public void TakeDamage(int damage)
         {
-            Health -= damage - Armor;
+            _health -= damage - _armor;
         }
     }
 
@@ -38,7 +39,7 @@ namespace Homework
 
         public void Pray()
         {
-            Armor += _prayArmorBoost;
+            _armor += _prayArmorBoost;
         }
     }
 
@@ -54,8 +55,8 @@ namespace Homework
         }
 
         public void Shout() {
-            Health += _shoutHealthBoost;
-            Damage += _shoutDamageBoost;
+            _health += _shoutHealthBoost;
+            _damage += _shoutDamageBoost;
         }
     }
 }
