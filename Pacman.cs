@@ -48,12 +48,13 @@ namespace PacMan
                 previousPlayerY = playerY;
 
                 if (
-                    playerX + playerDirectionX < map.GetLength(1)                       &&
-                    playerY + playerDirectionY < map.GetLength(0)                       &&
-                    playerX + playerDirectionX >= 0                                     &&
-                    playerY + playerDirectionY >= 0                                     &&
+                    playerX + playerDirectionX < map.GetLength(1) &&
+                    playerY + playerDirectionY < map.GetLength(0) &&
+                    playerX + playerDirectionX >= 0 &&
+                    playerY + playerDirectionY >= 0 &&
                     map[playerY + playerDirectionY, playerX + playerDirectionX] != '#'
-                ) {
+                )
+                {
                     playerX += playerDirectionX;
                     playerY += playerDirectionY;
                 }
@@ -72,23 +73,27 @@ namespace PacMan
                     enemyY += enemyDirectionY;
                 }
 
-                if (map[enemyY + enemyDirectionY, enemyX + enemyDirectionX] == '#' || (enemyDirectionX == 0 && enemyDirectionY == 0)) {
+                if (map[enemyY + enemyDirectionY, enemyX + enemyDirectionX] == '#' || (enemyDirectionX == 0 && enemyDirectionY == 0))
+                {
                     ChangeMovementDirection(out enemyDirectionX, out enemyDirectionY, random);
                 }
 
-                if (map[playerY, playerX] == '+') {
+                if (map[playerY, playerX] == '+')
+                {
                     targetsCollected++;
                     map[playerY, playerX] = ' ';
                 }
 
                 Thread.Sleep(playerSlowness);
 
-                if (targetsCollected >= targetsMax) {
+                if (targetsCollected >= targetsMax)
+                {
                     gameRunning = false;
                     gameWon = true;
                 }
 
-                if (enemyX + enemyDirectionX == playerX && enemyY + enemyDirectionY == playerY) {
+                if (enemyX + enemyDirectionX == playerX && enemyY + enemyDirectionY == playerY)
+                {
                     gameRunning = false;
                 }
             }
@@ -107,14 +112,23 @@ namespace PacMan
             for (int i = 0; i < map.GetLength(0); i++)
             {
                 for (int j = 0; j < map.GetLength(1); j++)
-                {
-                    Console.Write(map[i, j]);
+                { 
+                    char mapChar = map[i, j];
+
+                    ConsoleColor lastForegroundColor = Console.ForegroundColor;
+
+                    if (mapChar == '+')
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                    Console.Write(mapChar);
+                    Console.ForegroundColor = lastForegroundColor;
                 }
                 Console.WriteLine();
             }
         }
 
-        static void DrawScore(int targetsCollected, int targetsMax, int mapMaxWidth) {
+        static void DrawScore(int targetsCollected, int targetsMax, int mapMaxWidth)
+        {
             int lastCursorX = Console.CursorLeft;
             int lastCursorY = Console.CursorTop;
 
@@ -122,13 +136,14 @@ namespace PacMan
             string scoreLabelText = String.Format(scoreLabelFormat, targetsCollected, targetsMax);
             int scoreLabelLength = scoreLabelText.Length;
 
-            Console.SetCursorPosition(mapMaxWidth + 5 + scoreLabelLength / 2, 1);
+            Console.SetCursorPosition(mapMaxWidth + scoreLabelLength, 1);
             Console.Write(scoreLabelText);
 
             Console.SetCursorPosition(lastCursorX, lastCursorY);
         }
 
-        static void ChangeMovementDirection(ConsoleKey keyPressed, out int playerDirectionX, out int playerDirectionY) {
+        static void ChangeMovementDirection(ConsoleKey keyPressed, out int playerDirectionX, out int playerDirectionY)
+        {
             playerDirectionX = 0;
             playerDirectionY = 0;
             switch (keyPressed)
@@ -157,7 +172,8 @@ namespace PacMan
             int newDirection = random.Next(0, 4);
             int newDirectionX = 0, newDirectionY = 0;
 
-            switch (newDirection) {
+            switch (newDirection)
+            {
                 case 0:
                     newDirectionX = 0;
                     newDirectionY = 1;
@@ -180,7 +196,7 @@ namespace PacMan
             enemyDirectionY = newDirectionY;
         }
 
-        static void DrawPlayer(int playerX, int playerY, int previousPlayerX, int previousPlayerY)
+        static void DrawPlayer(int playerX, int playerY, int previousPlayerX, int previousPlayerY, ConsoleColor color = ConsoleColor.DarkBlue)
         {
             int lastCursorPositionX = Console.CursorLeft;
             int lastCursorPositionY = Console.CursorTop;
@@ -189,20 +205,34 @@ namespace PacMan
             Console.Write(' ');
 
             Console.SetCursorPosition(playerX, playerY);
+            ConsoleColor lastForegroundColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
             Console.Write('*');
+            Console.ForegroundColor = lastForegroundColor;
 
             Console.SetCursorPosition(lastCursorPositionX, lastCursorPositionY);
         }
 
-        static void DrawEnemy(int enemyX, int enemyY, int previousEnemyX, int previousEnemyY, char[,] map) {
+        static void DrawEnemy(int enemyX, int enemyY, int previousEnemyX, int previousEnemyY, char[,] map, ConsoleColor color = ConsoleColor.DarkRed)
+        {
             int lastCursorPositionX = Console.CursorLeft;
             int lastCursorPositionY = Console.CursorTop;
 
             Console.SetCursorPosition(previousEnemyX, previousEnemyY);
-            Console.Write(map[previousEnemyY, previousEnemyX]);
+
+            ConsoleColor lastForegroundColor = Console.ForegroundColor;
+            char charAtPreviousEnemyPosition = map[previousEnemyY, previousEnemyX];
+
+            if (charAtPreviousEnemyPosition == '+')
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            Console.Write(charAtPreviousEnemyPosition);
 
             Console.SetCursorPosition(enemyX, enemyY);
-            Console.WriteLine('x');
+
+            Console.ForegroundColor = color;
+            Console.Write('x');
+            Console.ForegroundColor = lastForegroundColor;
 
             Console.SetCursorPosition(lastCursorPositionX, lastCursorPositionY);
         }
@@ -257,7 +287,8 @@ namespace PacMan
                             map[i, j] = currentChar;
                             targets--;
                         }
-                        else if (currentChar == enemyChar) { 
+                        else if (currentChar == enemyChar)
+                        {
                             enemyCharX = j;
                             enemyCharY = i;
                         }
