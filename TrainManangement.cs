@@ -1,263 +1,225 @@
 using System;
 using System.Collections.Generic;
 
-namespace TrainManagement
+namespace Homework
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
-            TrainManager trainManager = new TrainManager(new List<City>
-                {
-                    new City("Moscow", 90, 12635000),
-                    new City("Saint Petersburg", 67, 11920000),
-                    new City("Yaroslavl", 54, 597161)
-                },
-                10
-            );
+            TrainManager trainManager = new TrainManager(10);
             trainManager.Work();
+        }
+    }
+
+    class StatusBar
+    {
+        public string Text { get; private set; }
+        public int PositionY { get; private set; }
+
+        public StatusBar(int topOffset)
+        {
+            PositionY = topOffset;
+        }
+
+        public void Display()
+        {
+            int previousCursorPositionX = Console.CursorLeft;
+            int previousCursorPositionY = Console.CursorTop;
+
+            for (int positionX = Console.WindowWidth; positionX >= 0; positionX--)
+            {
+                Console.SetCursorPosition(positionX, PositionY);
+                Console.Write(' ');
+            }
+
+            Console.SetCursorPosition(0, PositionY);
+            Console.Write(Text);
+
+            Console.SetCursorPosition(previousCursorPositionX, previousCursorPositionY);
+        }
+
+        public void UpdateText(string text)
+        {
+            Text = text;
+            Display();
         }
     }
 
     class TrainManager
     {
-        private List<Train> _trainsSent;
+        private List<Train> _trainsDispatched;
         private Train _currentTrain;
-        private List<City> _availableCities;
         private List<Carriage> _availableCarriages;
+        private StatusBar _statusBar;
+        private int _statusBarPositionY = 0;
+        private int _mainTextOffsetY = 2;
 
-        public TrainManager(List<City> availableCities, int carriageCount)
+        public TrainManager(int carriageCount)
         {
-            Random random = new Random();
-            int minCarriagePassengerCapacity = 50;
-            int maxCarriagePassengerCapacity = 95;
-
-            _trainsSent = new List<Train>();
-            _availableCities = availableCities;
+            _trainsDispatched = new List<Train>();
             _availableCarriages = new List<Carriage>();
+            _statusBar = new StatusBar(_statusBarPositionY);
 
-            for (int i = 0; i < carriageCount; i++)
-            {
-                _availableCarriages.Add(new Carriage(random.Next(minCarriagePassengerCapacity, maxCarriagePassengerCapacity)));
-            }
+            AddCarriages(carriageCount);
         }
 
-        public void StartPreparingNewTrain(City departureCity, City arrivalCity)
+        public void AddCarriages(int count)
         {
-            _trainsSent.Add(_currentTrain);
-            _currentTrain = new Train(departureCity, arrivalCity);
+            for (int i = 0; i < count; i++)
+            {
+                _availableCarriages.Add(new Carriage());
+            }
         }
 
-        public void DisplayListWithHighlight(List<string> list, int highlightIndex = -1)
+        public void Work()
         {
-            for (int i = 0; i < list.Count; i++)
-            {
-                string element = list[i];
+            bool isWorking = true;
 
-                if (i == highlightIndex)
+            while (isWorking)
+            {
+                ClearConsole();
+
+                if (_currentTrain != null)
+                    _trainsDispatched.Add(_currentTrain);
+
+                _currentTrain = new Train(ReadDirection());
+                _currentTrain.SellTickets();
+                WaitKey();
+
+                string statusBarText = _statusBar.Text;
+
+                while (_currentTrain.HasEnoughPassengerCapacity == false)
                 {
-                    Console.WriteLine($"> {element} <");
+                    ClearConsole();
+
+                    _statusBar.UpdateText(statusBarText + $"Carriages: {_currentTrain.CarriageCount} | Capacity: {_currentTrain.PassengerCapacity}/{_currentTrain.TicketsBought}");
+
+
+                    for (int i = 0; i < _availableCarriages.Count; i++)
+                    {
+                        Carriage carriage = _availableCarriages[i];
+                        Console.WriteLine($"{i} | Capacity: {carriage.PassengerCapacity}");
+                    }
+
+                    Console.Write("Index of carriage to attach (other number to buy new carriage): ");
+                    int newCarriageIndex = ReadInt();
+
+                    if (newCarriageIndex >= 0 && newCarriageIndex < _availableCarriages.Count)
+                    {
+                        _currentTrain.AddCarriage(_availableCarriages[newCarriageIndex]);
+                        _availableCarriages.RemoveAt(newCarriageIndex);
+                    }
+                    else
+                    {
+                        AddCarriages(1);
+                    }
                 }
-                else
-                {
-                    Console.WriteLine(element);
-                }
+
+                Console.WriteLine("Train now has enough passenger capacity.");
+                Console.WriteLine("Press [Esc] to exit, press any other key to prepare another train]");
+
+                if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+                    isWorking = false;
             }
         }
 
-        public Carriage GetCarriageFromUser(string prompt)
+        public Direction ReadDirection()
         {
-            int selectedCarriageIndex = 0;
-            Carriage selectedCarriage = _availableCarriages[selectedCarriageIndex];
-            bool selectionMade = false;
-            List<string> carriageLabels = new List<string>();
+            string directionFormat = "Train from {0} to {1} | ";
+            _statusBar.UpdateText(string.Format(directionFormat, "...", "..."));
 
-            foreach (Carriage carriage in _availableCarriages)
-            {
-                carriageLabels.Add($"Capacity: {carriage.PassengerCapacity}");
-            }
+            Console.Write("Departure City: ");
+            string departureCity = Console.ReadLine();
+            _statusBar.UpdateText(string.Format(directionFormat, departureCity, "..."));
 
-            while (selectionMade == false)
-            {
-                Console.Clear();
-                Console.Write(prompt);
-                DisplayListWithHighlight(carriageLabels, selectedCarriageIndex);
+            Console.Write("Destination City: ");
+            string destinationCity = Console.ReadLine();
+            _statusBar.UpdateText(string.Format(directionFormat, departureCity, destinationCity));
 
-                ConsoleKey pressedKey = Console.ReadKey(true).Key;
-
-                switch (pressedKey)
-                {
-                    case ConsoleKey.DownArrow:
-                        if (selectedCarriageIndex < _availableCarriages.Count - 1)
-                        {
-                            selectedCarriageIndex++;
-                            selectedCarriage = _availableCarriages[selectedCarriageIndex];
-                        }
-                        break;
-                    case ConsoleKey.UpArrow:
-                        if (selectedCarriageIndex >= 1)
-                        {
-                            selectedCarriageIndex--;
-                            selectedCarriage = _availableCarriages[selectedCarriageIndex];
-                        }
-                        break;
-                    case ConsoleKey.Enter:
-                        selectionMade = true;
-                        break;
-                }
-            }
-
-            return selectedCarriage;
+            return new Direction(departureCity, destinationCity);
         }
 
-        public City GetCityFromUser(string prompt)
-        {
-            int selectedCityIndex = 0;
-            City selectedCity = _availableCities[selectedCityIndex];
-            bool selectionMade = false;
-            List<string> cityNames = new List<string>();
-
-            foreach (City city in _availableCities)
-            {
-                cityNames.Add(city.Name);
-            }
-
-            while (selectionMade == false)
-            {
-                Console.Clear();
-
-                Console.WriteLine(prompt);
-                DisplayListWithHighlight(cityNames, selectedCityIndex);
-
-                ConsoleKey pressedKey = Console.ReadKey(true).Key;
-
-                switch (pressedKey)
-                {
-                    case ConsoleKey.DownArrow:
-                        if (selectedCityIndex < _availableCities.Count - 1)
-                        {
-                            selectedCityIndex++;
-                            selectedCity = _availableCities[selectedCityIndex];
-                        }
-                        break;
-                    case ConsoleKey.UpArrow:
-                        if (selectedCityIndex >= 1)
-                        {
-                            selectedCityIndex--;
-                            selectedCity = _availableCities[selectedCityIndex];
-                        }
-                        break;
-                    case ConsoleKey.I:
-                        Console.Clear();
-                        selectedCity.ShowInfo();
-                        Console.WriteLine();
-                        WaitKey();
-                        break;
-                    case ConsoleKey.Enter:
-                        selectionMade = true;
-                        break;
-                }
-            }
-
-            return selectedCity;
-        }
-
-        public void WaitKey()
+        private void WaitKey()
         {
             Console.WriteLine("[Press any key to continue]");
             Console.ReadKey(true);
         }
 
-        public void Work()
+        private void ClearConsole()
         {
-            bool isApplicationRunning = true;
-            
-            while (isApplicationRunning)
-            {
-                City departureCity = GetCityFromUser("Select departure city:");
-                City arrivalCity = GetCityFromUser("Select arrival city: ");
-
-                _currentTrain = new Train(departureCity, arrivalCity);
-
-                _currentTrain.SellTickets();
-                Console.WriteLine($"{_currentTrain.TicketsBought} tickets were bought for your train");
-                WaitKey();
-
-                while (_currentTrain.HasEnoughCapacity == false)
-                {
-                    Console.Clear();
-                    Carriage selectedCarriage = GetCarriageFromUser("Select carriages for your train:");
-                    _availableCarriages.Remove(selectedCarriage);
-                    _currentTrain.AttachCarriage(selectedCarriage);
-                }
-            }
+            Console.Clear();
+            Console.SetCursorPosition(0, _statusBar.PositionY + _mainTextOffsetY);
         }
+
+        private int ReadInt()
+        {
+            int inputtedInteger;
+
+            while (int.TryParse(Console.ReadLine(), out inputtedInteger) == false) { }
+
+            return inputtedInteger;
+        }
+
     }
 
-    class City
+    class Train
     {
-        public string Name { get; private set; }
-        public int Attractiveness { get; private set; }
-        public int Population { get; private set; }
+        private List<Carriage> _carriages = new List<Carriage>();
+        private Direction _direction;
+        private Random _random;
+        private int _minTicketsBought = 200;
+        private int _maxTickestBought = 500;
 
-        public City(string name, int attractiveness, int population)
+        public int TicketsBought { get; private set; }
+        public int CarriageCount { get {return _carriages.Count; } }
+        public int PassengerCapacity { get; private set; }
+        public bool HasEnoughPassengerCapacity { get; private set; }
+
+        public Train(Direction direction)
         {
-            Name = name;
-            Attractiveness = attractiveness;
-            Population = population;
+            _random = new Random();
+            _direction = direction;
         }
 
-        public void ShowInfo()
+        public void AddCarriage(Carriage carriage)
         {
-            Console.Write($"Name: {Name}\nAttractiveness Rating: {Attractiveness}%\nPopulation: {Population}");
+            _carriages.Add(carriage);
+            PassengerCapacity += carriage.PassengerCapacity;
+            HasEnoughPassengerCapacity = PassengerCapacity >= TicketsBought;
+        }
+
+        public void SellTickets()
+        {
+            TicketsBought = _random.Next(_minTicketsBought, _maxTickestBought);
+            Console.WriteLine("Tickets Bought: " + TicketsBought);
         }
     }
 
     class Carriage
     {
+        private Random _random;
+        private int _minCarriagePassengerCapacity = 50;
+        private int _maxCarriagePassengerCapacity = 95;
+
         public int PassengerCapacity { get; private set; }
 
-        public Carriage(int passengerCapacity)
+        public Carriage()
         {
-            PassengerCapacity = passengerCapacity;
+            _random = new Random();
+            PassengerCapacity = _random.Next(_minCarriagePassengerCapacity, _maxCarriagePassengerCapacity);
         }
     }
 
-    class Train
+    class Direction
     {
-        private List<Carriage> _carriages;
-        private Random _random;
+        public string DepartureCity { get; private set; }
+        public string DestinationCity { get; private set; }
 
-        public int PassengerCapacity { get; private set; }
-        public int TicketsBought { get; private set; }
-        public City DepartureCity { get; private set; }
-        public City ArrivalCity { get; private set; }
-        public bool HasEnoughCapacity { get; private set; }
-
-        public Train(City departureCity, City arrivalCity)
+        public Direction(string departureCity, string arrivalCity)
         {
             DepartureCity = departureCity;
-            ArrivalCity = arrivalCity;
-            _random = new Random();
-            _carriages = new List<Carriage>();
-        }
-
-        public void AttachCarriage(Carriage carriage)
-        {
-            _carriages.Add(carriage);
-            PassengerCapacity += carriage.PassengerCapacity;
-            HasEnoughCapacity = PassengerCapacity >= TicketsBought;
-        }
-
-        public void SellTickets()
-        {
-            int minAttractivenessModifier = 90;
-            int maxAttractivenessModifier = 110;
-
-            int departingPassengers = DepartureCity.Population * ArrivalCity.Attractiveness;
-            int arrivingPassengers = ArrivalCity.Population * DepartureCity.Attractiveness;
-            int attractivenessModifier = _random.Next(minAttractivenessModifier, maxAttractivenessModifier);
-            TicketsBought = (departingPassengers + arrivingPassengers) * attractivenessModifier / 100;
+            DestinationCity = arrivalCity;
         }
     }
 }
