@@ -9,8 +9,8 @@ namespace Homework
             Console.Write("Army B Fighters: ");
             int armyBFighterCount = ReadInt();
 
-            Army armyA = new Army(armyAFighterCount, 100, 120, 50, 70, 40, 45);
-            Army armyB = new Army(armyBFighterCount, 100, 110, 40, 90, 10, 45);
+            Army armyA = new Army(armyAFighterCount, 100, 120, 50, 70, 80, 90);
+            Army armyB = new Army(armyBFighterCount, 100, 120, 50, 70, 80, 90);
 
             Battle battle = new Battle(armyA, armyB);
             battle.Work();
@@ -106,7 +106,7 @@ namespace Homework
 
         public void TakeDamage(int damage)
         {
-            int damageToTake = damage - Defense;
+            int damageToTake = damage * Defense / 100;
 
             if (damageToTake > 0)
                 Health -= damageToTake;
