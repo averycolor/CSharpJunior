@@ -1,0 +1,219 @@
+namespace Homework
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            new RepairShop(new List<Part>
+            {
+                new Part("Radiator", 100, 30),
+                new Part("Wheel", 400, 60),
+                new Part("Windshield", 1000, 100),
+                new Part("Steering Wheel", 500, 10)
+            }, 100).Work();
+        }
+    }
+
+    static class UserUtils
+    {
+        public static void WaitKey()
+        {
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey(true);
+        }
+    }
+
+    class RepairShop
+    {
+        private Storage _storage;
+        private List<Part> _allParts;
+        private Random _random;
+        private Car _currentCar;
+
+        public int Money { get; private set; }
+        public int RefusalFine { get; private set; }
+
+        public RepairShop(List<Part> allParts, int refusalCompensation)
+        {
+            _random = new Random();
+            _storage = new Storage();
+            _allParts = allParts;
+            RefusalFine = refusalCompensation;
+
+            foreach (Part part in _allParts)
+            {
+                _storage.AddPart(part);
+            }
+        }
+
+        public void ServeCar()
+        {
+            ConsoleKey userInput;
+
+            Console.WriteLine($"Your balance: {Money}");
+
+            _currentCar = new Car(GetRandomPart());
+
+            do
+            {
+                Console.Clear();
+                _currentCar.ShowInfo();
+                Console.WriteLine($"Total Repair Cost: {_currentCar.BrokenPart.TotalCost}");
+
+
+                Console.WriteLine("[1] Attempt repair");
+                Console.WriteLine("[2] Visit storage");
+
+                userInput = Console.ReadKey(true).Key;
+                Console.Clear();
+
+                switch (userInput)
+                {
+                    case ConsoleKey.D1:
+                        AttemptRepair();
+                        break;
+                    case ConsoleKey.D2:
+                        _storage.ShowParts();
+                        break;
+                }
+
+                UserUtils.WaitKey();
+            } while (userInput != ConsoleKey.D1);
+        }
+
+        public void Work()
+        {
+            bool isWorking = true;
+
+            do
+            {
+                ServeCar();
+                Console.Clear();
+                Console.WriteLine("Press [Q] to exit, press any other key to continue");
+
+                isWorking = Money >= 0 && Console.ReadKey(true).Key != ConsoleKey.Q;
+            } while (isWorking);
+
+            Console.Clear();
+            Console.WriteLine("Game over");
+        }
+
+        private void AttemptRepair()
+        {
+            if (_storage.HasPart(_currentCar.BrokenPart))
+            {
+                Console.WriteLine($"Repair possible. [1] Repair. [2] Refuse (Fine - {RefusalFine})");
+
+                ConsoleKey userInput = Console.ReadKey(true).Key;
+
+                switch (userInput)
+                {
+                    case ConsoleKey.D1:
+                        ReplacePart(_currentCar.BrokenPart);
+                        break;
+                    case ConsoleKey.D2:
+                        RefuseRepair();
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Repair impossible. You have to pay a fine of {RefusalFine}");
+                RefuseRepair();
+            }
+        }
+
+        private void ReplacePart(Part part)
+        {
+            _storage.TryRemovePart(part);
+            Money += part.TotalCost;
+        }
+
+        private void RefuseRepair()
+        {
+            Money -= RefusalFine;
+        }
+
+        private Part GetRandomPart()
+        {
+            return _allParts[_random.Next(_allParts.Count)];
+        }
+    }
+
+    class Car
+    {
+        public Part BrokenPart { get; private set; }
+
+        public Car(Part brokenPart)
+        {
+            BrokenPart = brokenPart;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"The car's {BrokenPart.Name} is broken");
+        }
+    }
+
+    class Part
+    {
+        public string Name { get; private set; }
+        public int Cost { get; private set; }
+        public int InstallationCost { get; private set; }
+        public int TotalCost => Cost + InstallationCost;
+
+        public Part(string name, int cost, int serviceCharge)
+        {
+            Name = name;
+            Cost = cost;
+            InstallationCost = serviceCharge;
+        }
+    }
+
+    class Storage
+    {
+        private Dictionary<Part, int> _parts;
+
+        public Storage()
+        {
+            _parts = new Dictionary<Part, int>();
+        }
+
+        public bool HasPart(Part part, int amount = 1)
+        {
+            return _parts.ContainsKey(part) && _parts[part] >= amount;
+        }
+
+        public void AddPart(Part part, int amount = 1)
+        {
+            if (_parts.ContainsKey(part))
+                _parts[part] += amount;
+            else
+                _parts[part] = amount;
+        }
+
+        public bool TryRemovePart(Part part, int amount = 1)
+        {
+            if (_parts.ContainsKey(part) && _parts[part] >= amount)
+            {
+                _parts[part] -= amount;
+                return true;
+                
+            } 
+            else
+            {
+                return false;
+            }
+        }
+
+        public void ShowParts()
+        {
+            foreach (var part in _parts)
+            {
+                Console.WriteLine($"{part.Key.Name} x{part.Value}");
+            }
+        }
+    }
+}
+@averycolor
+ 
