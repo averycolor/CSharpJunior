@@ -21,6 +21,15 @@ namespace Homework
             Console.WriteLine("Press any key to continue");
             Console.ReadKey(true);
         }
+
+        public static int ReadInt(int minValue = int.MinValue, int maxValue = int.MaxValue)
+        {
+            int outputtedInteger;
+
+            while (int.TryParse(Console.ReadLine(), out outputtedInteger) == false || outputtedInteger < minValue || outputtedInteger > maxValue) ;
+
+            return outputtedInteger;
+        }
     }
 
     class RepairShop
@@ -29,56 +38,24 @@ namespace Homework
         private List<Part> _allParts;
         private Random _random;
         private Car _currentCar;
+        private const ConsoleKey _interactionKey1 = ConsoleKey.D1;
+        private const ConsoleKey _interactionKey2 = ConsoleKey.D2;
+        private const ConsoleKey _exitKey = ConsoleKey.Q;
 
         public int Money { get; private set; }
-        public int RefusalFine { get; private set; }
+        public int IncorrectRepairFine { get; private set; }
 
         public RepairShop(List<Part> allParts, int refusalCompensation)
         {
             _random = new Random();
             _storage = new Storage();
             _allParts = allParts;
-            RefusalFine = refusalCompensation;
+            IncorrectRepairFine = refusalCompensation;
 
             foreach (Part part in _allParts)
             {
                 _storage.AddPart(part);
             }
-        }
-
-        public void ServeCar()
-        {
-            ConsoleKey userInput;
-
-            Console.WriteLine($"Your balance: {Money}");
-
-            _currentCar = new Car(GetRandomPart());
-
-            do
-            {
-                Console.Clear();
-                _currentCar.ShowInfo();
-                Console.WriteLine($"Total Repair Cost: {_currentCar.BrokenPart.TotalCost}");
-
-
-                Console.WriteLine("[1] Attempt repair");
-                Console.WriteLine("[2] Visit storage");
-
-                userInput = Console.ReadKey(true).Key;
-                Console.Clear();
-
-                switch (userInput)
-                {
-                    case ConsoleKey.D1:
-                        AttemptRepair();
-                        break;
-                    case ConsoleKey.D2:
-                        _storage.ShowParts();
-                        break;
-                }
-
-                UserUtils.WaitKey();
-            } while (userInput != ConsoleKey.D1);
         }
 
         public void Work()
@@ -89,38 +66,78 @@ namespace Homework
             {
                 ServeCar();
                 Console.Clear();
-                Console.WriteLine("Press [Q] to exit, press any other key to continue");
+                Console.WriteLine($"Press [{_exitKey}] to exit, press any other key to continue");
 
-                isWorking = Money >= 0 && Console.ReadKey(true).Key != ConsoleKey.Q;
+                isWorking = Money >= 0 && Console.ReadKey(true).Key != _exitKey;
             } while (isWorking);
 
             Console.Clear();
-            Console.WriteLine("Game over");
+
+            if (Money <= 0)
+            {
+                Console.Write("You became bankrupt");
+
+                if (Money < 0)
+                    Console.Write($" (Debt: {-Money})");
+
+                Console.WriteLine();
+            }
+            else
+                Console.WriteLine("Game exited");
         }
 
-        private void AttemptRepair()
+        private void ServeCar()
         {
-            if (_storage.HasPart(_currentCar.BrokenPart))
-            {
-                Console.WriteLine($"Repair possible. [1] Repair. [2] Refuse (Fine - {RefusalFine})");
+            ConsoleKey userInput;
+            _currentCar = new Car(GetRandomPart());
 
-                ConsoleKey userInput = Console.ReadKey(true).Key;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine($"Your balance: {Money}");
+                _currentCar.ShowInfo();
+                Console.WriteLine($"Total Repair Cost: {_currentCar.BrokenPart.TotalCost}");
+
+
+                Console.WriteLine($"[{_interactionKey1}] Attempt repair");
+                Console.WriteLine($"[{_interactionKey2}] Visit storage");
+
+                userInput = Console.ReadKey(true).Key;
+                Console.Clear();
 
                 switch (userInput)
                 {
-                    case ConsoleKey.D1:
-                        ReplacePart(_currentCar.BrokenPart);
+                    case _interactionKey1:
+                        TryRepair();
                         break;
-                    case ConsoleKey.D2:
-                        RefuseRepair();
+                    case _interactionKey2:
+                        _storage.ShowParts();
                         break;
                 }
+
+                UserUtils.WaitKey();
+            } while (userInput != ConsoleKey.D1);
+        }
+
+        private void TryRepair()
+        {
+            Console.WriteLine("Select part to replace: ");
+            _storage.ShowParts(true);
+
+            int replacementPartIndex = UserUtils.ReadInt(0, _storage.PartCount);
+            Part replacementPart;
+            _storage.TryGetPartByIndex(replacementPartIndex, out replacementPart);
+
+            if (replacementPart == _currentCar.BrokenPart)
+            {
+                Console.WriteLine("Replacement succesful");
+                Money += replacementPart.TotalCost;
             }
             else
             {
-                Console.WriteLine($"Repair impossible. You have to pay a fine of {RefusalFine}");
-                RefuseRepair();
-            }
+                Console.WriteLine("Replacement failed! Incorrect part selected");
+                PayFine();
+            }   
         }
 
         private void ReplacePart(Part part)
@@ -129,9 +146,9 @@ namespace Homework
             Money += part.TotalCost;
         }
 
-        private void RefuseRepair()
+        private void PayFine()
         {
-            Money -= RefusalFine;
+            Money -= IncorrectRepairFine;
         }
 
         private Part GetRandomPart()
@@ -174,6 +191,8 @@ namespace Homework
     {
         private Dictionary<Part, int> _parts;
 
+        public int PartCount => _parts.Count;
+
         public Storage()
         {
             _parts = new Dictionary<Part, int>();
@@ -197,23 +216,50 @@ namespace Homework
             if (_parts.ContainsKey(part) && _parts[part] >= amount)
             {
                 _parts[part] -= amount;
+
+                if (_parts[part] == 0)
+                    _parts.Remove(part);
+
                 return true;
-                
-            } 
+
+            }
             else
             {
                 return false;
             }
         }
 
-        public void ShowParts()
+        public void ShowParts(bool showIndices = false)
         {
-            foreach (var part in _parts)
+            if (_parts.Count > 0)
             {
-                Console.WriteLine($"{part.Key.Name} x{part.Value}");
+                for (int i = 0; i < _parts.Count; i++)
+                {
+                    var part = _parts.ElementAt(i);
+
+                    if (showIndices)
+                        Console.Write($"[{i}] ");
+
+                    Console.WriteLine($"{part.Key.Name} x{part.Value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Storage empty");
+            }
+        }
+
+        public bool TryGetPartByIndex(int index, out Part part)
+        {
+            if (index >= 0 && index < _parts.Count)
+            {
+                part = _parts.ElementAt(index).Key;
+                return true;
+            } else
+            {
+                part = null;
+                return false;
             }
         }
     }
 }
-@averycolor
- 
