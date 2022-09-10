@@ -29,43 +29,7 @@ namespace Homework
     class Jail
     {
         private List<Criminal> _criminals = new List<Criminal>();
-
-        private Crime ReadCrime()
-        {
-            Array crimes = Enum.GetValues(typeof(Crime));
-
-            for (int i = 0; i < crimes.Length; i++) { 
-                Console.WriteLine(i + " " + (Crime)i);
-            }
-
-            Console.WriteLine("Enter crime index: ");
-            return (Crime) crimes.GetValue(UserUtils.ReadInt(0, crimes.Length));
-        }
-
-        private Criminal CreateCriminal()
-        {
-            Console.WriteLine("Enter criminal data");
-            Console.Write("Name: ");
-            string criminalName = Console.ReadLine();
-
-            Console.Write("Last name: ");
-            string criminalLastName = Console.ReadLine();
-
-            Crime crime = ReadCrime();
-            return new Criminal(criminalName, criminalLastName, crime);
-        }
-
-        private int ReadCriminalIndex()
-        {
-            ShowCriminals(false, true);
-            int criminalIndex;
-            Console.Write("Criminal index: ");
-
-            while (int.TryParse(Console.ReadLine(), out criminalIndex) == false || criminalIndex < 0 || criminalIndex >= _criminals.Count()) { }
-
-            return criminalIndex;
-        }
-             
+        
         public void ArrestCriminal(Criminal criminal)
         {
             _criminals.Add(criminal);
@@ -141,6 +105,43 @@ namespace Homework
                         break;
                 }
             }
+        }
+
+        private Crime ReadCrime()
+        {
+            Array crimes = Enum.GetValues(typeof(Crime));
+
+            for (int i = 0; i < crimes.Length; i++)
+            {
+                Console.WriteLine(i + " " + (Crime)i);
+            }
+
+            Console.WriteLine("Enter crime index: ");
+            return (Crime)crimes.GetValue(UserUtils.ReadInt(0, crimes.Length));
+        }
+
+        private Criminal CreateCriminal()
+        {
+            Console.WriteLine("Enter criminal data");
+            Console.Write("Name: ");
+            string criminalName = Console.ReadLine();
+
+            Console.Write("Last name: ");
+            string criminalLastName = Console.ReadLine();
+
+            Crime crime = ReadCrime();
+            return new Criminal(criminalName, criminalLastName, crime);
+        }
+
+        private int ReadCriminalIndex()
+        {
+            ShowCriminals(false, true);
+            int criminalIndex;
+            Console.Write("Criminal index: ");
+
+            while (int.TryParse(Console.ReadLine(), out criminalIndex) == false || criminalIndex < 0 || criminalIndex >= _criminals.Count()) { }
+
+            return criminalIndex;
         }
     }
 
