@@ -33,7 +33,7 @@ public class Alarm : MonoBehaviour
         {
             if (_volume < _maxVolume)
             {
-                _volume += _sensitivity * Time.deltaTime;
+                _volume = Mathf.MoveTowards(_volume, _maxVolume, _sensitivity * Time.deltaTime);
                 _audioSource.volume = _volume;
             }
         }
@@ -41,7 +41,7 @@ public class Alarm : MonoBehaviour
         {
             if (_volume > 0)
             {
-                _volume -= _sensitivity * Time.deltaTime;
+                _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime);
                 _audioSource.volume = _volume;
             }
             else {
@@ -52,7 +52,7 @@ public class Alarm : MonoBehaviour
 
     public void UpdateLightColor()
     {
-        _lightRenderer.material.SetColor("_Emission", Color.Lerp(Color.black, _lightColor, _normalizedVolume));
+        _lightRenderer.material.SetColor("_EmissionColor", Color.Lerp(Color.black, _lightColor, _normalizedVolume));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -61,7 +61,6 @@ public class Alarm : MonoBehaviour
         if (other.TryGetComponent(out Burglar burglar))
         {
             _intruderDetected = true;
-            _lightRenderer.material.EnableKeyword("_EMISSION");
         }
 
         _audioSource.Play();
@@ -73,7 +72,6 @@ public class Alarm : MonoBehaviour
         if (other.TryGetComponent(out Burglar burglar))
         {
             _intruderDetected = false;
-            _lightRenderer.material.DisableKeyword("_EMISSION");
         }
     }
 }
