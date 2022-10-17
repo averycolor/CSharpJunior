@@ -10,11 +10,33 @@ public class Alarm : MonoBehaviour
     [SerializeField] private MeshRenderer _lightRenderer;
     [SerializeField] private Color _lightColor;
 
+    private Coroutine _increaseVolumeJob;
+    private Coroutine _decreaseVolumeJob;
     private AudioSource _audioSource;
     private float _volume;
-    private float _normalizedVolume => _volume / _maxVolume;
+    private float NormalizedVolume => _volume / _maxVolume;
 
-    private bool _intruderDetected;
+    public void Activate()
+    {
+        if (_decreaseVolumeJob != null)
+        {
+            StopCoroutine(_decreaseVolumeJob);
+        }
+
+        _audioSource.Play();
+        _increaseVolumeJob = StartCoroutine(IncreaseVolume());
+    }
+
+    public void Deactivate()
+    {
+        if (_increaseVolumeJob != null)
+        {
+            StopCoroutine(_increaseVolumeJob);
+        }
+
+        _audioSource.Stop();
+        _decreaseVolumeJob = StartCoroutine(DecreaseVolume());
+    }
 
     private void Start()
     {
@@ -23,55 +45,31 @@ public class Alarm : MonoBehaviour
 
     private void Update()
     {
-        UpdateVolume();
-        UpdateLightColor();
+        _audioSource.volume = _volume;
     }
 
-    public void UpdateVolume()
+    private void UpdateLightColor()
     {
-        if (_intruderDetected)
+        _lightRenderer.material.SetColor("_EmissionColor", Color.Lerp(Color.black, _lightColor, NormalizedVolume));
+    }
+
+    private IEnumerator IncreaseVolume()
+    {
+        while (NormalizedVolume < 1)
         {
-            if (_volume < _maxVolume)
-            {
-                _volume = Mathf.MoveTowards(_volume, _maxVolume, _sensitivity * Time.deltaTime);
-                _audioSource.volume = _volume;
-            }
-        }
-        else
-        {
-            if (_volume > 0)
-            {
-                _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime);
-                _audioSource.volume = _volume;
-            }
-            else {
-                _audioSource.Stop();
-            }
+            _volume = Mathf.MoveTowards(_volume, _maxVolume, _sensitivity * Time.deltaTime);
+            UpdateLightColor();
+            yield return null;
         }
     }
 
-    public void UpdateLightColor()
+    private IEnumerator DecreaseVolume()
     {
-        _lightRenderer.material.SetColor("_EmissionColor", Color.Lerp(Color.black, _lightColor, _normalizedVolume));
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("Enter");
-        if (other.TryGetComponent(out Burglar burglar))
+        while (NormalizedVolume > 0)
         {
-            _intruderDetected = true;
-        }
-
-        _audioSource.Play();
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        Debug.Log("Exit");
-        if (other.TryGetComponent(out Burglar burglar))
-        {
-            _intruderDetected = false;
+            _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime * -1f);
+            UpdateLightColor();
+            yield return null;
         }
     }
 }
