@@ -34,7 +34,6 @@ public class Alarm : MonoBehaviour
             StopCoroutine(_increaseVolumeJob);
         }
 
-        _audioSource.Stop();
         _decreaseVolumeJob = StartCoroutine(DecreaseVolume());
     }
 
@@ -69,6 +68,12 @@ public class Alarm : MonoBehaviour
         {
             _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime * -1f);
             UpdateLightColor();
+
+            if (NormalizedVolume == 0) 
+            {
+                _audioSource.Stop();
+            }
+
             yield return null;
         }
     }
