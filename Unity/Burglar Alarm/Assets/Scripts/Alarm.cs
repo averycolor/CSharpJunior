@@ -66,10 +66,10 @@ public class Alarm : MonoBehaviour
     {
         while (NormalizedVolume > 0)
         {
-            _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime * -1f);
+            _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime);
             UpdateLightColor();
 
-            if (NormalizedVolume == 0) 
+            if (NormalizedVolume == 0)
             {
                 _audioSource.Stop();
             }

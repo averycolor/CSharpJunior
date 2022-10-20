@@ -10,14 +10,12 @@ public class WaypointPatrol : MonoBehaviour
     private int _currentPointIndex;
     private Transform _currentPoint;
 
-    // Start is called before the first frame update
     void Start()
     {
         _currentPointIndex = 0;
         NextPoint();
     }
 
-    // Update is called once per frame
     void Update()
     {
         transform.position = Vector3.MoveTowards(transform.position, _currentPoint.position, _movementSpeed * Time.deltaTime);
