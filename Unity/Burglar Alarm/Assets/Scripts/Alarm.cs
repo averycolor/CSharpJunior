@@ -7,14 +7,14 @@ public class Alarm : MonoBehaviour
 {
     [SerializeField] private float _sensitivity;
     [SerializeField] private float _maxVolume;
-    [SerializeField] private MeshRenderer _lightRenderer;
-    [SerializeField] private Color _lightColor;
+
+    [SerializeField] private AudioSource _audioSource;
 
     private Coroutine _increaseVolumeJob;
     private Coroutine _decreaseVolumeJob;
-    private AudioSource _audioSource;
     private float _volume;
-    private float NormalizedVolume => _volume / _maxVolume;
+
+    public float NormalizedVolume => _volume / _maxVolume;
 
     public void Activate()
     {
@@ -24,7 +24,7 @@ public class Alarm : MonoBehaviour
         }
 
         _audioSource.Play();
-        _increaseVolumeJob = StartCoroutine(IncreaseVolume());
+        _increaseVolumeJob = StartCoroutine(ChangeVolume(1f));
     }
 
     public void Deactivate()
@@ -34,12 +34,7 @@ public class Alarm : MonoBehaviour
             StopCoroutine(_increaseVolumeJob);
         }
 
-        _decreaseVolumeJob = StartCoroutine(DecreaseVolume());
-    }
-
-    private void Start()
-    {
-        _audioSource = GetComponent<AudioSource>();
+        _decreaseVolumeJob = StartCoroutine(ChangeVolume(0f));
     }
 
     private void Update()
@@ -47,33 +42,11 @@ public class Alarm : MonoBehaviour
         _audioSource.volume = _volume;
     }
 
-    private void UpdateLightColor()
+    private IEnumerator ChangeVolume(float normalizedTarget)
     {
-        _lightRenderer.material.SetColor("_EmissionColor", Color.Lerp(Color.black, _lightColor, NormalizedVolume));
-    }
-
-    private IEnumerator IncreaseVolume()
-    {
-        while (NormalizedVolume < 1)
+        while (NormalizedVolume != normalizedTarget)
         {
-            _volume = Mathf.MoveTowards(_volume, _maxVolume, _sensitivity * Time.deltaTime);
-            UpdateLightColor();
-            yield return null;
-        }
-    }
-
-    private IEnumerator DecreaseVolume()
-    {
-        while (NormalizedVolume > 0)
-        {
-            _volume = Mathf.MoveTowards(_volume, 0f, _sensitivity * Time.deltaTime);
-            UpdateLightColor();
-
-            if (NormalizedVolume == 0)
-            {
-                _audioSource.Stop();
-            }
-
+            _volume = Mathf.MoveTowards(_volume, _maxVolume * normalizedTarget, _sensitivity * Time.deltaTime);
             yield return null;
         }
     }
