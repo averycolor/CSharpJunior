@@ -10,13 +10,13 @@ public class WaypointPatrol : MonoBehaviour
     private int _currentPointIndex;
     private Transform _currentPoint;
 
-    void Start()
+    private void Start()
     {
         _currentPointIndex = 0;
         NextPoint();
     }
 
-    void Update()
+    private void Update()
     {
         transform.position = Vector3.MoveTowards(transform.position, _currentPoint.position, _movementSpeed * Time.deltaTime);
 
@@ -26,7 +26,7 @@ public class WaypointPatrol : MonoBehaviour
         }
     }
 
-    void NextPoint()
+    private void NextPoint()
     {
         _currentPointIndex += 1;
 

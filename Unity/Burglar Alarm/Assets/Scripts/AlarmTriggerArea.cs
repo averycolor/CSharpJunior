@@ -6,19 +6,19 @@ public class AlarmTriggerArea : MonoBehaviour
 {
     [SerializeField] private Alarm _alarm;
 
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<Burglar>(out Burglar burglar))
         {
-            _alarm.Activate();
+            _alarm.SetEnabled(true);
         }
     }
 
-    public void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent<Burglar>(out Burglar burglar))
         {
-            _alarm.Deactivate();
+            _alarm.SetEnabled(false);
         }
     }
 }

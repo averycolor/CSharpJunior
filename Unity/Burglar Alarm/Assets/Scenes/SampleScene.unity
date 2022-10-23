@@ -355,6 +355,7 @@ GameObject:
   - component: {fileID: 288063154}
   - component: {fileID: 288063153}
   - component: {fileID: 288063152}
+  - component: {fileID: 288063156}
   m_Layer: 0
   m_Name: AlarmLight
   m_TagString: Untagged
@@ -438,6 +439,20 @@ Transform:
   m_Father: {fileID: 791333413}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &288063156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288063151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a1b1ae59dfc70418bb14ffbfddbd42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _color: {r: 1, g: 0, b: 0, a: 0}
+  _alarm: {fileID: 791333412}
 --- !u!1 &327377115
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,8 +719,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sensitivity: 0.3
   _maxVolume: 1
-  _lightRenderer: {fileID: 288063153}
-  _lightColor: {r: 1, g: 0, b: 0, a: 0}
+  _audioSource: {fileID: 791333414}
 --- !u!4 &791333413
 Transform:
   m_ObjectHideFlags: 0
