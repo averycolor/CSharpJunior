@@ -9,19 +9,10 @@ public class SpawnerGroup : MonoBehaviour
     private Spawner[] _spawners;
     private int _currentSpawnerIndex;
 
-    private Coroutine _spawnJob;
-
     private void Start()
     {
         _spawners = GetComponentsInChildren<Spawner>();
-    }
-
-    private void Update()
-    {
-        if (_spawnJob == null)
-        {
-            _spawnJob = StartCoroutine(Spawn());
-        }
+        StartCoroutine(Spawn());
     }
 
     private IEnumerator Spawn()
@@ -34,6 +25,6 @@ public class SpawnerGroup : MonoBehaviour
             _currentSpawnerIndex = 0;
         }
 
-        _spawnJob = null;
+        StartCoroutine(Spawn());
     }
 }
