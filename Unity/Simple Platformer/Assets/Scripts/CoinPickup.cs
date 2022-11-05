@@ -14,7 +14,6 @@ public class CoinPickup : MonoBehaviour
         {
             Destroy(other.gameObject);
             _coins++;
-            print(_coins);
         }
     }
 }

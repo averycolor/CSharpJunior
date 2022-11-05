@@ -10,6 +10,11 @@ public class PlayerAnimationController : MonoBehaviour
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
 
+    private const float _flipXThreshold = 0f;
+    private const string _landTrigger = "Land";
+    private const string _jumpTrigger = "Jump";
+    private const string _horizontalVelocityParameter = "Horizontal Velocity";
+
     private void Start()
     {
         TryGetComponent(out _movementController);
@@ -21,9 +26,9 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void Update()
     {
-        if (_movementController.HorizontalVelocity != 0)
+        if (_movementController.HorizontalVelocity != _flipXThreshold)
         {
-            _spriteRenderer.flipX = _movementController.HorizontalVelocity < 0f;
+            _spriteRenderer.flipX = _movementController.HorizontalVelocity < _flipXThreshold;
         }
     }
 
@@ -59,18 +64,18 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void OnJump()
     {
-        _animator.ResetTrigger("Land");
-        _animator.SetTrigger("Jump");
+        _animator.ResetTrigger(_landTrigger);
+        _animator.SetTrigger(_jumpTrigger);
     }
 
     private void OnLand()
     {
-        _animator.ResetTrigger("Jump");
-        _animator.SetTrigger("Land");
+        _animator.ResetTrigger(_jumpTrigger);
+        _animator.SetTrigger(_landTrigger);
     }
 
     private void OnMove()
     {
-        _animator.SetFloat("Horizontal Velocity", Mathf.Abs(_movementController.HorizontalVelocity));
+        _animator.SetFloat(_horizontalVelocityParameter, Mathf.Abs(_movementController.HorizontalVelocity));
     }
 }
