@@ -14,10 +14,6 @@ public class Alarm : MonoBehaviour
 
     public float NormalizedVolume => _volume / _maxVolume;
 
-    private void Update()
-    {
-    }
-
     public void SetEnabled(bool isEnabled)
     {
         if (_changeVolumeJob != null)
