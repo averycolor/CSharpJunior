@@ -7,14 +7,15 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
 
-    private UnityEvent _jump = new UnityEvent();
-    private UnityEvent _land = new UnityEvent();
-    private UnityEvent _move = new UnityEvent();
 
     private RaycastHit2D[] _groundCheckResults = new RaycastHit2D[1];
     private Rigidbody2D _rigidbody;
     private bool _isGrounded;
     private const float _groundCheckTolerance = 0.01f;
+
+    private UnityEvent _jump = new UnityEvent();
+    private UnityEvent _land = new UnityEvent();
+    private UnityEvent _move = new UnityEvent();
 
     public event UnityAction Jump
     {
