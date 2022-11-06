@@ -66,7 +66,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         ApplyHorizontalMovement();
         ApplyJumping();
-        CheckGround();
+        UpdateGround();
     }
 
     private void ApplyHorizontalMovement()
@@ -83,7 +83,7 @@ public class PlayerMovementController : MonoBehaviour
         }
     }
 
-    private void CheckGround()
+    private void UpdateGround()
     {
         bool previousIsGrounded = _isGrounded;
         _isGrounded = _rigidbody.Cast(-transform.up, _groundCheckResults, _groundCheckTolerance) != 0;
