@@ -1,19 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(SpriteRenderer))]
 public class PlayerAnimationController : MonoBehaviour
 {
+    private const float FlipXThreshold = 0f;
+    private const string LandTrigger = "Land";
+    private const string JumpTrigger = "Jump";
+    private const string HorizontalVelocityParameter = "Horizontal Velocity";
+
     private PlayerMovementController _movementController;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
 
-    private const float _flipXThreshold = 0f;
-    private const string _landTrigger = "Land";
-    private const string _jumpTrigger = "Jump";
-    private const string _horizontalVelocityParameter = "Horizontal Velocity";
+    private void OnEnable()
+    {
+        StartListening();
+    }
+
+    private void OnDisable()
+    {
+        StopListening();
+    }
 
     private void Start()
     {
@@ -26,21 +34,12 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void Update()
     {
-        if (_movementController.HorizontalVelocity != _flipXThreshold)
+        if (_movementController.HorizontalVelocity != FlipXThreshold)
         {
-            _spriteRenderer.flipX = _movementController.HorizontalVelocity < _flipXThreshold;
+            _spriteRenderer.flipX = _movementController.HorizontalVelocity < FlipXThreshold;
         }
     }
 
-    private void OnEnable()
-    {
-        StartListening();
-    }
-
-    private void OnDisable()
-    {
-        StopListening();
-    }
 
     private void StartListening()
     {
@@ -64,18 +63,18 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void OnJump()
     {
-        _animator.ResetTrigger(_landTrigger);
-        _animator.SetTrigger(_jumpTrigger);
+        _animator.ResetTrigger(LandTrigger);
+        _animator.SetTrigger(JumpTrigger);
     }
 
     private void OnLand()
     {
-        _animator.ResetTrigger(_jumpTrigger);
-        _animator.SetTrigger(_landTrigger);
+        _animator.ResetTrigger(JumpTrigger);
+        _animator.SetTrigger(LandTrigger);
     }
 
     private void OnMove()
     {
-        _animator.SetFloat(_horizontalVelocityParameter, Mathf.Abs(_movementController.HorizontalVelocity));
+        _animator.SetFloat(HorizontalVelocityParameter, Mathf.Abs(_movementController.HorizontalVelocity));
     }
 }

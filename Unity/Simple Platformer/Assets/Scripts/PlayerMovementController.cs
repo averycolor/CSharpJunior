@@ -4,14 +4,14 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovementController : MonoBehaviour
 {
+    private const float GroundCheckTolerance = 0.01f;
+
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
-
 
     private RaycastHit2D[] _groundCheckResults = new RaycastHit2D[1];
     private Rigidbody2D _rigidbody;
     private bool _isGrounded;
-    private const float _groundCheckTolerance = 0.01f;
 
     private UnityEvent _jump = new UnityEvent();
     private UnityEvent _land = new UnityEvent();
@@ -86,7 +86,7 @@ public class PlayerMovementController : MonoBehaviour
     private void UpdateGround()
     {
         bool previousIsGrounded = _isGrounded;
-        _isGrounded = _rigidbody.Cast(-transform.up, _groundCheckResults, _groundCheckTolerance) != 0;
+        _isGrounded = _rigidbody.Cast(-transform.up, _groundCheckResults, GroundCheckTolerance) != 0;
 
         if (previousIsGrounded && _isGrounded == false)
         {

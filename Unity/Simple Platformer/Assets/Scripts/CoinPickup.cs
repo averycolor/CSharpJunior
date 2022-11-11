@@ -8,11 +8,9 @@ public class CoinPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        GameObject other = collision.gameObject;
-
-        if (other.TryGetComponent(out Coin coin))
+        if (collision.gameObject.TryGetComponent(out Coin coin))
         {
-            Destroy(other.gameObject);
+            Destroy(collision.gameObject);
             _coins++;
         }
     }
