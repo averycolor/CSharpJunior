@@ -5,25 +5,39 @@ using System.Linq;
 
 public class ObjectPool : MonoBehaviour
 {
-    [SerializeField] private int _capacity;
     [SerializeField] private Transform _container;
+    [SerializeField] private GameObject _prefab;
+    [SerializeField] private int _startingCount;
 
     private List<GameObject> _pool = new List<GameObject>();
 
-    protected void Initialize(GameObject prefab)
+    protected void Initialize()
     {
-        for (int i = 0; i < _capacity; i++)
+        for (int i = 0; i < _startingCount; i++)
         {
-            GameObject newGameObject = Instantiate(prefab, _container);
+            GameObject newGameObject = Instantiate(_prefab, _container);
             newGameObject.SetActive(false);
             _pool.Add(newGameObject);
         }
     }
 
-    protected bool TryGetObject(out GameObject result)
+    private GameObject InitializeObject(GameObject prefab)
     {
-        result = _pool.First(p => p.activeSelf == false);
+        GameObject newGameObject = Instantiate(prefab, _container);
+        newGameObject.SetActive(false);
+        _pool.Add(newGameObject);
+        return newGameObject;
+    }
 
-        return result != null;
+    protected GameObject GetObject()
+    {
+        GameObject result = _pool.FirstOrDefault(p => p.activeSelf == false);
+
+        if (result == null)
+        {
+            result = InitializeObject(_prefab);
+        }
+
+        return result;
     }
 }

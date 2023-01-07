@@ -1,19 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using System.Linq;
 
-[RequireComponent(typeof(TMP_Text))]
 public class HealthDisplay : MonoBehaviour
 {
     [SerializeField] private Player _player;
+    [SerializeField] private Heart _heartTemplate;
 
-    private TMP_Text _text;
+    private List<Heart> _hearts;
 
     private void OnEnable()
     {
-        _text = GetComponent<TMP_Text>();
         _player.HealthChanged += OnHealthChanged;
+        _hearts = new List<Heart>();
     }
 
     private void OnDisable()
@@ -21,8 +21,20 @@ public class HealthDisplay : MonoBehaviour
         _player.HealthChanged -= OnHealthChanged;
     }
 
-    private void OnHealthChanged(int health)
+    private void OnHealthChanged(int value)
     {
-        _text.text = health.ToString();
+        for (int i = 0; i < _hearts.Count; i++) 
+        {
+            Heart heart = _hearts[i];
+            Destroy(heart.gameObject);
+        }
+
+        _hearts = new List<Heart>();
+
+        for (int i = 0; i < value; i++)
+        {
+            Heart newHeart = Instantiate(_heartTemplate, transform);
+            _hearts.Add(newHeart);
+        }
     }
 }
