@@ -7,21 +7,10 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     private Slider _slider;
-    private float _healthTarget;
+    private float _targetSliderValue;
 
     [SerializeField] private PlayerHealth _playerHealth;
     [SerializeField] private float _adjustmentSpeed;
-
-    private void Start()
-    {
-        _slider = GetComponent<Slider>();
-        _slider.maxValue = _playerHealth.MaxValue;
-    }
-
-    private void Update()
-    {
-        _slider.value = Mathf.MoveTowards(_slider.value, _healthTarget, _adjustmentSpeed * Time.deltaTime);
-    }
 
     private void OnEnable()
     {
@@ -33,8 +22,29 @@ public class HealthBar : MonoBehaviour
         _playerHealth.Changed -= OnHealthChanged;
     }
 
-    public void OnHealthChanged(int health)
+    private void Start()
     {
-        _healthTarget = health;
+        _slider = GetComponent<Slider>();
+        _slider.maxValue = _playerHealth.MaxValue;
+    }
+
+    private void Update()
+    {
+        _slider.value = Mathf.MoveTowards(_slider.value, _targetSliderValue, _adjustmentSpeed * Time.deltaTime);
+    }
+
+    private IEnumerator GradualSlide()
+    {
+        while (_slider.value != _targetSliderValue)
+        {
+            _slider.value = Mathf.MoveTowards(_slider.value, _targetSliderValue, _adjustmentSpeed * Time.deltaTime);
+            yield return null;
+        }
+    }
+
+    private void OnHealthChanged(int health)
+    {
+        _targetSliderValue = health;
+        StartCoroutine(GradualSlide());
     }
 }
