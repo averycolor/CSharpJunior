@@ -8,6 +8,7 @@ public class HealthBar : MonoBehaviour
 {
     private Slider _slider;
     private float _targetSliderValue;
+    private Coroutine _gradualSlideJob;
 
     [SerializeField] private PlayerHealth _playerHealth;
     [SerializeField] private float _adjustmentSpeed;
@@ -28,11 +29,6 @@ public class HealthBar : MonoBehaviour
         _slider.maxValue = _playerHealth.MaxValue;
     }
 
-    private void Update()
-    {
-        _slider.value = Mathf.MoveTowards(_slider.value, _targetSliderValue, _adjustmentSpeed * Time.deltaTime);
-    }
-
     private IEnumerator GradualSlide()
     {
         while (_slider.value != _targetSliderValue)
@@ -45,6 +41,12 @@ public class HealthBar : MonoBehaviour
     private void OnHealthChanged(int health)
     {
         _targetSliderValue = health;
-        StartCoroutine(GradualSlide());
+
+        if (_gradualSlideJob != null)
+        {
+            StopCoroutine(_gradualSlideJob);
+        }
+
+        _gradualSlideJob = StartCoroutine(GradualSlide());
     }
 }
