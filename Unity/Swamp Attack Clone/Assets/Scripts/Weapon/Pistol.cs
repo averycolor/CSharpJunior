@@ -4,20 +4,18 @@ using UnityEngine;
 
 public class Pistol : Weapon
 {
-    // Start is called before the first frame update
-    void Start()
+    private void Update()
     {
-        
+        UpdateFiringCooldown();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public override void StartShooting() {
+        if (_currentFiringCooldown <= 0)
+        {
+            Instantiate(Bullet, ShootPoint.position + ShootOffset, ShootPoint.rotation);
+            ResetFiringCooldown();
+        }
     }
-
-    public override void Shoot(Transform point)
-    {
-        Instantiate(Bullet, point);
-    }
+    public override void StopShooting() {}
+    public override void Shoot() {}
 }
