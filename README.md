@@ -1,1 +1,1 @@
-This is an archive of all the C# scripts that were written throughout my completion of a C# / Unity course
+This is a collection of all the projects and scripts that were created throughout my completion of a C# / Unity course by IJunior (https://ijunior.ru/unity-start)
