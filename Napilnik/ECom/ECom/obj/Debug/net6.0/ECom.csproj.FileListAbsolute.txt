@@ -1,0 +1,15 @@
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/bin/Debug/net6.0/ECom
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/bin/Debug/net6.0/ECom.deps.json
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/bin/Debug/net6.0/ECom.runtimeconfig.json
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/bin/Debug/net6.0/ECom.dll
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/bin/Debug/net6.0/ECom.pdb
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.csproj.AssemblyReference.cache
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.GeneratedMSBuildEditorConfig.editorconfig
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.AssemblyInfoInputs.cache
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.AssemblyInfo.cs
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.csproj.CoreCompileInputs.cache
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.dll
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/refint/ECom.dll
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.pdb
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ECom.genruntimeconfig.cache
+/Users/entruderx/Documents/GitHub/IJunior/Napilnik/ECom/ECom/obj/Debug/net6.0/ref/ECom.dll
