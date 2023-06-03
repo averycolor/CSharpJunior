@@ -83,7 +83,13 @@ abstract class GoodContainer
 
     protected Dictionary<Good, int> Empty()
     {
-        Dictionary<Good, int> old = _contents;
+        Dictionary<Good, int> old = new Dictionary<Good, int>();
+
+        foreach (var (good, count) in _contents)
+        {
+            old.Add(good, count);
+        }
+
         _contents.Clear();
         return old;
     }
