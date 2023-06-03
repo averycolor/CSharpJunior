@@ -22,96 +22,69 @@ Console.WriteLine(cart.Order().Paylink);
 
 cart.Add(iPhone12, 9);
 
-struct GoodCell
-{
-    public Good Good { get; private set; }
-    public int Count { get; private set; }
-
-    public GoodCell(Good good, int count)
-    {
-        if (count <= 0)
-        {
-            throw new InvalidOperationException("Count cannot be non-positive");
-        }
-
-        Good = good;
-        Count = count;
-    }
-
-    public GoodCell ChangeCount(int delta)
-    {
-        return new GoodCell(Good, Count + delta);
-    }
-}
-
 abstract class GoodContainer
 {
-    private List<GoodCell> _contents = new List<GoodCell>();
+    private Dictionary<Good, int> _contents = new Dictionary<Good, int>();
 
-    protected void AddGoods(GoodCell otherCell)
+    protected void AddGoods(Good good, int count)
     {
-        if (otherCell.Count < 0)
+        if (count < 0)
         {
             throw new InvalidOperationException("Cannot add a negative amount of goods.");
         }
 
-        for (int i = 0; i < _contents.Count; i++)
+        if (_contents.ContainsKey(good))
         {
-            GoodCell goodCell = _contents[i];
-
-            if (goodCell.Good == otherCell.Good)
-            {
-                _contents[i] = goodCell.ChangeCount(otherCell.Count);
-                return;
-            }
+            _contents[good] += count;
         }
-
-        _contents.Add(otherCell);
+        else if (count != 0)
+        {
+            _contents[good] = count;
+        }
     }
 
-    protected void RemoveGoods(GoodCell otherCell)
+    protected void RemoveGoods(Good good, int count)
     {
-        if (otherCell.Count < 0)
+        if (count < 0)
         {
             throw new InvalidOperationException("Cannot remove a negative amount of goods.");
         }
 
-        for (int i = 0; i < _contents.Count; i++)
+        if (_contents.ContainsKey(good))
         {
-            GoodCell goodCell = _contents[i];
+            int newCount = _contents[good] - count;
 
-            if (goodCell.Good == otherCell.Good)
+            if (newCount > 0)
             {
-                int countDelta = goodCell.Count - otherCell.Count;
-
-                if (countDelta == 0)
-                {
-                    _contents.RemoveAt(i);
-                    return;
-                }
-                else if (countDelta < 0)
-                {
-                    throw new InvalidOperationException("Cannot remove amount of goods exceeding stored amount");
-                }
-
-                _contents[i] = goodCell.ChangeCount(-otherCell.Count);
-                return;
+                _contents[good] = newCount;
             }
+            else if (newCount == 0)
+            {
+                _contents.Remove(good);
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot remove more than is stored");
+            }
+        }
+        else
+        {
+            throw new InvalidOperationException("Cannot remove goods that are not stored");
         }
     }
 
     public void Show()
     {
-        foreach (GoodCell cell in _contents)
+        foreach (var (good, count) in _contents)
         {
-            Console.WriteLine($"{cell.Count}x {cell.Good.Name}");
+            Console.WriteLine($"{count}x {good.Name}");
         }
     }
 
-    protected List<GoodCell> Empty()
+    protected Dictionary<Good, int> Empty()
     {
-        List<GoodCell> old = _contents;
-        _contents = new List<GoodCell>();
+        Dictionary<Good, int> old = _contents;
+        _contents.Clear();
         return old;
     }
 }
@@ -130,12 +103,12 @@ class Warehouse : GoodContainer
 {
     public void Deliver(Good good, int count)
     {
-        AddGoods(new GoodCell(good, count));
+        AddGoods(good, count);
     }
 
     public void Dispatch(Good good, int count)
     {
-        RemoveGoods(new GoodCell(good, count));
+        RemoveGoods(good, count);
     }
 }
 
@@ -165,17 +138,16 @@ class Cart : GoodContainer
 
     public void Add(Good good, int count)
     {
-        GoodCell goodCell = new GoodCell(good, count);
-        AddGoods(goodCell);
+        AddGoods(good, count);
     }
 
     public Order Order()
     {
-        List<GoodCell> orderedGoods = Empty();
+        Dictionary<Good, int> orderedGoods = Empty();
 
-        foreach (GoodCell goodCell in orderedGoods)
+        foreach (var orderedGood in orderedGoods)
         {
-            _warehouse.Dispatch(goodCell.Good, goodCell.Count);
+            _warehouse.Dispatch(orderedGood.Key, orderedGood.Value);
         }
 
         return new Order();
