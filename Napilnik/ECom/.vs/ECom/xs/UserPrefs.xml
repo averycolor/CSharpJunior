@@ -3,12 +3,12 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="ECom/Program.cs">
     <Files>
-      <File FileName="ECom/Program.cs" Line="33" Column="10" />
+      <File FileName="ECom/Program.cs" Line="66" Column="14" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="ECom" expanded="True" selected="True">
+          <Node name="ECom" expanded="True">
             <Node name="ECom" expanded="True" />
           </Node>
         </State>
