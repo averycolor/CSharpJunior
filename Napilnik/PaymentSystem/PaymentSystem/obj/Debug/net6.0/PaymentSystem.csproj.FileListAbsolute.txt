@@ -1,0 +1,15 @@
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/bin/Debug/net6.0/PaymentSystem
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/bin/Debug/net6.0/PaymentSystem.deps.json
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/bin/Debug/net6.0/PaymentSystem.runtimeconfig.json
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/bin/Debug/net6.0/PaymentSystem.dll
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/bin/Debug/net6.0/PaymentSystem.pdb
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.csproj.AssemblyReference.cache
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.GeneratedMSBuildEditorConfig.editorconfig
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.AssemblyInfoInputs.cache
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.AssemblyInfo.cs
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.csproj.CoreCompileInputs.cache
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.dll
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/refint/PaymentSystem.dll
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.pdb
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/PaymentSystem.genruntimeconfig.cache
+/Users/entruderx/Projects/PaymentSystem/PaymentSystem/obj/Debug/net6.0/ref/PaymentSystem.dll
