@@ -2,12 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class EnemyMover : TimedAction
 {
     [SerializeField] private float _range;
     [SerializeField] private float _speed;
 
     private Coroutine _moveJob;
+    private Rigidbody _rigidbody;
+
+    private void Start()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+    }
 
     protected override void OnTimer()
     {
@@ -25,7 +32,7 @@ public class EnemyMover : TimedAction
         while (transform.position != destination)
         {
             yield return null;
-            transform.position = Vector3.MoveTowards(transform.position, destination, Time.deltaTime * _speed);
+            _rigidbody.MovePosition(Time.deltaTime * _speed * (destination - transform.position).normalized);
         }
 
         _moveJob = null;
