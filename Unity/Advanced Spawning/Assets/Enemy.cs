@@ -12,19 +12,23 @@ public class Enemy : MonoBehaviour
     {
         if (_target != null)
         {
-            if (transform.position == _target.transform.position)
-            {
-                Destroy(gameObject);
-            } 
-            else
-            {
-                transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, _speed * Time.deltaTime);
-            }
+            transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, _speed * Time.deltaTime);
         }
     }
 
     public void SetTarget(EnemyTarget target)
     {
         _target = target;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out EnemyTarget enemyTarget))
+        {
+            if (_target == enemyTarget)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }

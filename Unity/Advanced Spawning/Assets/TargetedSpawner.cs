@@ -8,9 +8,14 @@ public class TargetedSpawner : MonoBehaviour
     [SerializeField] private EnemyTarget _target;
     [SerializeField] private float _spawnInterval;
 
-    private void Start()
+    private Coroutine _spawnJob;
+
+    private void Update()
     {
-        StartCoroutine(Spawn());
+        if (_spawnJob == null)
+        {
+            _spawnJob = StartCoroutine(Spawn());
+        }
     }
 
     private IEnumerator Spawn()
@@ -20,6 +25,6 @@ public class TargetedSpawner : MonoBehaviour
         Enemy enemy = Instantiate(_enemy, transform);
         enemy.SetTarget(_target);
 
-        StartCoroutine(Spawn());
+        _spawnJob = null;
     }
 }
