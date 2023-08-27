@@ -8,23 +8,39 @@ public class TargetedSpawner : MonoBehaviour
     [SerializeField] private EnemyTarget _target;
     [SerializeField] private float _spawnInterval;
 
-    private Coroutine _spawnJob;
+    private bool _isSpawning;
 
-    private void Update()
+    private void Start()
     {
-        if (_spawnJob == null)
-        {
-            _spawnJob = StartCoroutine(Spawn());
-        }
+        StartCoroutine(Spawn());
+        StartSpawning();
+    }
+
+    public void StopSpawning()
+    {
+        _isSpawning = false;
+    }
+
+    public void StartSpawning()
+    {
+        _isSpawning = true;
     }
 
     private IEnumerator Spawn()
     {
-        yield return new WaitForSeconds(_spawnInterval);
+        while (true)
+        {
+            if (_isSpawning)
+            {
+                yield return new WaitForSeconds(_spawnInterval);
 
-        Enemy enemy = Instantiate(_enemy, transform);
-        enemy.SetTarget(_target);
-
-        _spawnJob = null;
+                Enemy enemy = Instantiate(_enemy, transform);
+                enemy.SetTarget(_target);
+            } 
+            else
+            {
+                yield return null;
+            }
+        }
     }
 }
